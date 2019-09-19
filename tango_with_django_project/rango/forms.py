@@ -1,7 +1,11 @@
-from django import forms 
-from rango.models import Page, Category 
+from django import forms
+from django.contrib.auth.models import User 
+from rango.models import Page, Category, UserProfile 
+
 
 class CategoryForm(forms.ModelForm):
+	# by listing the fields in the form class, we are overriding
+	# the behaviour from the model, enabling to extend it
 	name = forms.CharField(max_length=128,
 		help_text="Please enter the category name.")
 	views = forms.IntegerField(widget=forms.HiddenInput(), initial=0)
@@ -11,6 +15,7 @@ class CategoryForm(forms.ModelForm):
 	# An inline class to provide additional information on the form.
 	class Meta:
 		# Provide an association between the ModelForm and a model
+		# defines which fields will be included in the form
 		model = Category
 		fields = ('name', )
 
@@ -27,7 +32,7 @@ class PageForm(forms.ModelForm):
 
 		# What fields do we want to include in our form?
 		# This way we don't need every field in the model present.
-		# Some fileds may allow NULL values, so we may not want to include them.
+		# Some fieLds may allow NULL values, so we may not want to include them.
 		# Here, we are hiding the foreign key.
 		# we can either exclude category field from the form,
 		exclude = ('category',)
@@ -46,3 +51,17 @@ class PageForm(forms.ModelForm):
 
 			print(f"URL NOW: {cleaned_data['url']}")
 			return cleaned_data 
+
+class UserForm(forms.ModelForm):
+	# overriding the password field to extend it with passwordinput widget
+	password = forms.CharField(widget=forms.PasswordInput())
+
+	class Meta:
+		model = User 
+		# define which fields will be included in the form
+		fields = ('username', 'email', 'password')
+
+class UserProfileForm(forms.ModelForm):
+	class Meta:
+		model = UserProfile 
+		fields = ('website', 'picture')
